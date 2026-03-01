@@ -43,7 +43,11 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public  List<Product> findByCategory(String category) {
+    public  List<Product> findProductByCategory(String category) {
         return productRepository.findByCategory(category);
+    }
+
+    public List<String> findDistinctProductByCategory() {
+        return productRepository.findDistinctCategory();
     }
 }

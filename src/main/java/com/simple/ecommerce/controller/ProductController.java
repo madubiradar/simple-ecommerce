@@ -40,7 +40,13 @@ public class ProductController {
     }
 
     @GetMapping("/category/{category}")
-    public List<Product> findByCategory(@PathVariable("category") String category) {
-        return productService.findByCategory(category);
+    public List<Product> findProductByCategory(@PathVariable("category") String category) {
+        return productService.findProductByCategory(category);
+        //return new ResponseEntity<>(productService.findByCategory(category), HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/categories")
+    public List<String> findDistinctProductByCategory() {
+        return productService.findDistinctProductByCategory();
     }
 }
