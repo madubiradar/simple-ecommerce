@@ -1,5 +1,7 @@
-package com.simple.ecommerce.schema;
+package com.simple.ecommerce.dto;
 
+import com.simple.ecommerce.schema.BaseEntity;
+import com.simple.ecommerce.schema.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,24 +14,17 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
-@Table(name = "products")
-public class Product extends BaseEntity {
+public class GetProductResponseDto{
 
-    @Column(nullable = false, length = 100)
+    private Long id;
+
     private String title;
 
-    @Column
     private String description;
 
-    @Column(nullable = false)
     private BigDecimal price;
 
     private String image;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = true)
-    private Category category;
 
     private String rating;
 }

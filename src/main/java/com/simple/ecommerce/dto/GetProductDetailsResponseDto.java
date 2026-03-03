@@ -1,10 +1,12 @@
 package com.simple.ecommerce.dto;
 
-import jakarta.persistence.Column;
+import com.simple.ecommerce.schema.BaseEntity;
+import com.simple.ecommerce.schema.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
@@ -12,7 +14,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateProductRequestDto {
+public class GetProductDetailsResponseDto {
+
+    private Long id;
 
     private String title;
 
@@ -22,7 +26,7 @@ public class CreateProductRequestDto {
 
     private String image;
 
-    private Long categoryId;
-
     private String rating;
+
+    private String category;
 }

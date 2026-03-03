@@ -1,6 +1,8 @@
 package com.simple.ecommerce.controller;
 
 import com.simple.ecommerce.dto.CreateProductRequestDto;
+import com.simple.ecommerce.dto.GetProductDetailsResponseDto;
+import com.simple.ecommerce.dto.GetProductResponseDto;
 import com.simple.ecommerce.schema.Product;
 import com.simple.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAllProducts() {
+    public List<GetProductResponseDto> getAllProducts() {
         return productService.getAllProducts();
     }
 
@@ -28,6 +30,17 @@ public class ProductController {
     public Product getProductById(@PathVariable Long Id) {
         return productService.getProductById(Id);
     }
+
+    @GetMapping("/{Id}/optimized")
+    public GetProductResponseDto getProductByIdSkipCategory(@PathVariable Long Id) {
+        return productService.getProductByIdSkipCategory(Id);
+    }
+
+    @GetMapping("/{Id}/details")
+    public GetProductDetailsResponseDto getProductDetailsById(@PathVariable Long Id) {
+        return productService.getProductByIdWithCategory(Id);
+    }
+
 
     @PostMapping
     public void createProduct(@RequestBody CreateProductRequestDto createProductRequestDto) {
@@ -46,7 +59,7 @@ public class ProductController {
     }
 
     @GetMapping("/categories")
-    public List<String> findDistinctProductByCategory() {
-        return productService.findDistinctProductByCategory();
+    public List<String> findDistinctCategories() {
+        return productService.findDistinctCategories();
     }
 }

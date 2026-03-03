@@ -16,5 +16,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             nativeQuery = true,
             value = "SELECT DISTINCT category from products "
     )
-    List<String> findDistinctCategory();
+    List<String> findDistinctCategories();
+
+    @Query(nativeQuery = true,
+    value = "SELECT p.*, c.name from Products p INNER JOIN categories c on p.category_id = c.id where p.id=:id")
+    List<Product> findProductWithDetailsById(Long id); // this still makes additional category query because fetch lazy is set but product entity is used
+
+    @Query("SELECT p from Product p JOIN FETCH p.category where p.id=:id")
+    List<Product> getProductByIdWithCategoryUsingHibernateQuery(Long id); // this hibernate query will not make additional query
+
 }
