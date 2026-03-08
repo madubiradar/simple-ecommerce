@@ -3,6 +3,7 @@ package com.simple.ecommerce.service;
 import com.simple.ecommerce.dto.CreateProductRequestDto;
 import com.simple.ecommerce.dto.GetProductDetailsResponseDto;
 import com.simple.ecommerce.dto.GetProductResponseDto;
+import com.simple.ecommerce.exceptions.ResourceNotFoundException;
 import com.simple.ecommerce.repositories.ProductRepository;
 import com.simple.ecommerce.schema.Category;
 import com.simple.ecommerce.schema.Product;
@@ -42,7 +43,7 @@ public class ProductService {
 
     public Product getProductById(Long id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
-        return optionalProduct.orElseThrow(() -> new RuntimeException("product not found"));
+        return optionalProduct.orElseThrow(() -> new ResourceNotFoundException("product not found"));
     }
 
     public GetProductResponseDto getProductByIdSkipCategory(Long id) {
@@ -54,7 +55,7 @@ public class ProductService {
                         .image(product.getImage())
                         .price(product.getPrice())
                         .rating(product.getRating())
-                .build()).orElseThrow(() -> new RuntimeException("product not found"));
+                .build()).orElseThrow(() -> new ResourceNotFoundException("product not found"));
     }
 
     public GetProductDetailsResponseDto getProductByIdWithCategory(Long id) {

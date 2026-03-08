@@ -1,11 +1,14 @@
 package com.simple.ecommerce.controller;
 
+import com.simple.ecommerce.dto.ApiResponse;
 import com.simple.ecommerce.dto.CreateProductRequestDto;
 import com.simple.ecommerce.dto.GetProductDetailsResponseDto;
 import com.simple.ecommerce.dto.GetProductResponseDto;
 import com.simple.ecommerce.schema.Product;
 import com.simple.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,18 +30,25 @@ public class ProductController {
     }
 
     @GetMapping("/{Id}")
-    public Product getProductById(@PathVariable Long Id) {
-        return productService.getProductById(Id);
+    public ResponseEntity<ApiResponse<Product>> getProductById(@PathVariable Long Id) {
+        // 1. Fetch the data from your service
+        Product product = productService.getProductById(Id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(product, "Product successfully retrieved"));
     }
 
     @GetMapping("/{Id}/optimized")
-    public GetProductResponseDto getProductByIdSkipCategory(@PathVariable Long Id) {
-        return productService.getProductByIdSkipCategory(Id);
+    public ResponseEntity<ApiResponse<GetProductResponseDto>> getProductByIdSkipCategory(@PathVariable Long Id) {
+        GetProductResponseDto getProductResponseDto = productService.getProductByIdSkipCategory(Id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(getProductResponseDto,"Product Fetched successfully"));
     }
 
     @GetMapping("/{Id}/details")
-    public GetProductDetailsResponseDto getProductDetailsById(@PathVariable Long Id) {
-        return productService.getProductByIdWithCategory(Id);
+    public ResponseEntity<ApiResponse<GetProductDetailsResponseDto>> getProductDetailsById(@PathVariable Long Id) {
+        GetProductDetailsResponseDto getProductDetailsResponseDto = productService.getProductByIdWithCategory(Id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(getProductDetailsResponseDto, "fetched product details by Id"));
     }
 
 
