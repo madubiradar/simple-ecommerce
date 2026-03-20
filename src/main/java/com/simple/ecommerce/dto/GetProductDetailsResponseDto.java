@@ -26,7 +26,7 @@ public class GetProductDetailsResponseDto {
 
     private String image;
 
-    private String rating;
+    private BigDecimal rating;
 
     private String category;
 }
