@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 
@@ -14,6 +16,8 @@ import java.math.BigDecimal;
 @Builder
 @Entity
 @Table(name = "products")
+@SQLDelete(sql = "UPDATE products SET deleted_at= CURRENT_TIMESTAMP where id= ?")
+@SQLRestriction("deleted_at is NULL")
 public class Product extends BaseEntity {
 
     @Column(nullable = false, length = 100)

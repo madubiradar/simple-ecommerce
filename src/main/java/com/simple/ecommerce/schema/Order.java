@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
@@ -14,16 +16,9 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "orders")
+@SQLDelete(sql = "UPDATE orders SET deleted_at= CURRENT_TIMESTAMP where id= ?")
+@SQLRestriction("deleted_at is NULL")
 public class Order extends BaseEntity{
 
     private OrderStatus orderStatus;
-
-
-//    @ManyToMany
-//    @JoinTable(name = "order_products",  joinColumns = {
-//            @JoinColumn(name = "order_id"),
-//    },  inverseJoinColumns = {
-//            @JoinColumn(name = "product_id")
-//    })
-//    private List<Product> products;
 }
