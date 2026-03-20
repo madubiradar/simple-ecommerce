@@ -53,23 +53,32 @@ public class ProductController {
 
 
     @PostMapping
-    public void createProduct(@RequestBody CreateProductRequestDto createProductRequestDto) {
+    public ResponseEntity<ApiResponse<Void>> createProduct(
+            @RequestBody CreateProductRequestDto createProductRequestDto) {
         productService.createProduct(createProductRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(null, "product created successfully"));
     }
 
     @DeleteMapping("/{Id}")
-    public void deleteProductById(@PathVariable("Id") Long id) {
+    public ResponseEntity<ApiResponse<Void>> deleteProductById(@PathVariable("Id") Long id) {
         productService.deleteProductById(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(null, "product deleted successfully"));
     }
 
     @GetMapping("/category/{category}")
-    public List<Product> findProductByCategory(@PathVariable("category") String category) {
-        return productService.findProductByCategory(category);
-        //return new ResponseEntity<>(productService.findByCategory(category), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ApiResponse<List<Product>>> findProductByCategory(
+            @PathVariable("category") String category) {
+        List<Product> products = productService.findProductByCategory(category);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(products, "fetched products by category"));
     }
 
     @GetMapping("/categories")
-    public List<String> findDistinctCategories() {
-        return productService.findDistinctCategories();
+    public ResponseEntity<ApiResponse<List<String>>> findDistinctCategories() {
+        List<String> categories = productService.findDistinctCategories();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(categories, "fetched distinct categories"));
     }
 }

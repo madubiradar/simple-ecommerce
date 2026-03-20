@@ -7,6 +7,8 @@ import com.simple.ecommerce.schema.Product;
 import com.simple.ecommerce.service.CategoryService;
 import com.simple.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,23 +25,25 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
+    public ResponseEntity<List<Category>> getAllCategories() {
+        return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
     @GetMapping("/{Id}")
-    public Category getCategoryById(@PathVariable Long Id) {
-        return categoryService.getCategoryById(Id);
+    public ResponseEntity<Category> getCategoryById(@PathVariable Long Id) {
+        return ResponseEntity.ok(categoryService.getCategoryById(Id));
     }
 
     @PostMapping
-    public void createCategory(@RequestBody CreateCategoryRequestDto createCategoryRequestDto) {
-        categoryService.createCategory(createCategoryRequestDto);
+    public ResponseEntity<Category> createCategory(@RequestBody CreateCategoryRequestDto createCategoryRequestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(categoryService.createCategory(createCategoryRequestDto));
     }
 
     @DeleteMapping("/{Id}")
-    public void deleteProductById(@PathVariable("Id") Long id) {
+    public ResponseEntity<Void> deleteCategoryById(@PathVariable("Id") Long id) {
         categoryService.deleteCategoryById(id);
+        return ResponseEntity.noContent().build(); // 204 No Content, no body
     }
 
 }
