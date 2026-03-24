@@ -2,11 +2,8 @@ package com.simple.ecommerce.controller;
 
 import com.simple.ecommerce.dto.ApiResponse;
 import com.simple.ecommerce.dto.CreateCategoryRequestDto;
-import com.simple.ecommerce.dto.CreateProductRequestDto;
 import com.simple.ecommerce.schema.Category;
-import com.simple.ecommerce.schema.Product;
 import com.simple.ecommerce.service.CategoryService;
-import com.simple.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,9 +41,9 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{Id}")
-    public ResponseEntity<Void> deleteCategoryById(@PathVariable("Id") Long id) {
+    public ResponseEntity<ApiResponse<Category>> deleteCategoryById(@PathVariable("Id") Long id) {
         categoryService.deleteCategoryById(id);
-        return ResponseEntity.noContent().build(); // 204 No Content, no body
+        return ResponseEntity.ok(ApiResponse.success(null, "Category deleted successfully"));// 204 No Content, no body
     }
 
 }
