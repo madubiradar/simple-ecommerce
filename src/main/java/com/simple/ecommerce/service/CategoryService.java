@@ -1,6 +1,7 @@
 package com.simple.ecommerce.service;
 
 import com.simple.ecommerce.dto.CreateCategoryRequestDto;
+import com.simple.ecommerce.exceptions.ResourceNotFoundException;
 import com.simple.ecommerce.repositories.CategoryRepository;
 import com.simple.ecommerce.schema.Category;
 import org.jspecify.annotations.Nullable;
@@ -33,7 +34,7 @@ public class CategoryService {
 
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("category not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("category not found"));
     }
 
     public void deleteCategoryById(Long id) {

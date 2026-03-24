@@ -1,5 +1,6 @@
 package com.simple.ecommerce.controller;
 
+import com.simple.ecommerce.dto.ApiResponse;
 import com.simple.ecommerce.dto.CreateCategoryRequestDto;
 import com.simple.ecommerce.dto.CreateProductRequestDto;
 import com.simple.ecommerce.schema.Category;
@@ -25,19 +26,21 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories() {
-        return ResponseEntity.ok(categoryService.getAllCategories());
+    public ResponseEntity<ApiResponse<List<Category>>> getAllCategories() {
+        return ResponseEntity.ok(ApiResponse.success(categoryService.getAllCategories(), "all categories fetched"));
     }
 
     @GetMapping("/{Id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long Id) {
-        return ResponseEntity.ok(categoryService.getCategoryById(Id));
+    public ResponseEntity<ApiResponse<Category>> getCategoryById(@PathVariable Long Id) {
+        return ResponseEntity.ok(ApiResponse.success(categoryService.getCategoryById(Id),
+                "Category fetched Successfully"));
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestBody CreateCategoryRequestDto createCategoryRequestDto) {
+    public ResponseEntity<ApiResponse<Category>> createCategory(@RequestBody CreateCategoryRequestDto createCategoryRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(categoryService.createCategory(createCategoryRequestDto));
+                .body(ApiResponse.success(categoryService.createCategory(createCategoryRequestDto),
+                        "Category Created Successfully" ));
     }
 
     @DeleteMapping("/{Id}")
