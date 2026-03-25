@@ -1,7 +1,52 @@
 package com.simple.ecommerce.service;
 
+import com.simple.ecommerce.adpter.OrderAdapter;
+import com.simple.ecommerce.dto.GetOrderResponseDto;
+import com.simple.ecommerce.exceptions.ResourceNotFoundException;
+import com.simple.ecommerce.repositories.CategoryRepository;
+import com.simple.ecommerce.repositories.OrderProductsRepository;
+import com.simple.ecommerce.repositories.OrderRepository;
+import com.simple.ecommerce.repositories.ProductRepository;
+import com.simple.ecommerce.schema.Order;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
+
+    private final OrderRepository orderRepository;
+    private final OrderProductsRepository orderProductsRepository;
+    private final ProductRepository productRepository;
+    private final OrderAdapter orderAdapter;
+
+    public OrderService(OrderRepository orderRepository, OrderProductsRepository orderProductsRepository, ProductRepository productRepository, OrderAdapter orderAdapter) {
+        this.orderRepository = orderRepository;
+        this.orderProductsRepository = orderProductsRepository;
+        this.productRepository = productRepository;
+        this.orderAdapter = orderAdapter;
+    }
+
+    public List<GetOrderResponseDto> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        return orderAdapter.getOrderResponseDtoList(orders);
+    }
+
+    public GetOrderResponseDto getOrderById(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Order Id Not Found"));
+        return orderAdapter.mapGetOrderResponseDto(order);
+    }
+
+    public void deleteOrderById(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Order Id Not Found"));
+        orderRepository.delete(order);
+    }
+
+    public @Nullable Order createOrder(Order order) {
+        return null;
+    }
 }
