@@ -3,6 +3,7 @@ package com.simple.ecommerce.service;
 import com.simple.ecommerce.adpter.OrderAdapter;
 import com.simple.ecommerce.dto.CreateOrderRequestDto;
 import com.simple.ecommerce.dto.GetOrderResponseDto;
+import com.simple.ecommerce.dto.UpdateOrderRequestDto;
 import com.simple.ecommerce.exceptions.ResourceNotFoundException;
 import com.simple.ecommerce.repositories.CategoryRepository;
 import com.simple.ecommerce.repositories.OrderProductsRepository;
@@ -14,9 +15,13 @@ import com.simple.ecommerce.schema.OrderStatus;
 import com.simple.ecommerce.schema.Product;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -50,28 +55,62 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
-    public @Nullable Order createOrder(CreateOrderRequestDto  createOrderRequestDto) {
+    @Transactional
+    public GetOrderResponseDto createOrder(CreateOrderRequestDto  createOrderRequestDto) {
         Order order = Order.builder()
                 .orderStatus(OrderStatus.PENDING)
                 .build();
 
         orderRepository.save(order);
 
+
         if(createOrderRequestDto.getOrderItems() != null) {
-            for(var itemDto: createOrderRequestDto.getOrderItems()) {
-                Product product = productRepository.findById(itemDto.getProductId())
-                        .orElseThrow(()-> new ResourceNotFoundException("Product Id Not Found"));
-                OrderProducts orderProducts = OrderProducts
+            List<Long> productIds = createOrderRequestDto.getOrderItems()
+                    .stream()
+                    .map(item -> item.getProductId())
+                    .toList();
+
+            java.util.List<Product> products = productRepository.findAllById(productIds);
+
+            Map<Long, Product> productMap = products.stream()
+                                            .collect(Collectors.toMap(Product::getId, p -> p));
+
+            for(Long productId : productIds) {
+                if(!productMap.containsKey(productId)) {
+                    throw new ResourceNotFoundException("Product Not Found");
+                }
+            }
+            List<OrderProducts> orderProducts = new ArrayList<>();
+            for(var itemDto : createOrderRequestDto.getOrderItems()) {
+                Product product = productMap.get(itemDto.getProductId());
+                orderProducts.add(OrderProducts
                         .builder()
-                        .order(order)
+                                .order(order)
                         .product(product)
-                        .quantity(itemDto.getQuantity())
-                        .build();
-                orderProductsRepository.save(orderProducts);
+                                .quantity(itemDto.getQuantity())
+                        .build());
+            }
+            orderProductsRepository.saveAll(orderProducts);
+        }
+        return orderAdapter.mapGetOrderResponseDto(order);
+    }
+
+    public GetOrderResponseDto updateOrder(Long id, UpdateOrderRequestDto updateOrderRequestDto) {
+
+        Order order = orderRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Order Id Not Found"));
+
+        if(updateOrderRequestDto.getOrderStatus() != null) {
+            order.setOrderStatus(updateOrderRequestDto.getOrderStatus());
+            orderRepository.save(order);
+        }
+
+        if(updateOrderRequestDto.getOrderItems() != null) {
+            for(var itemDto : updateOrderRequestDto.getOrderItems()) {
+
             }
         }
 
+        return orderAdapter.mapGetOrderResponseDto(order);
 
-        return null;
     }
 }
