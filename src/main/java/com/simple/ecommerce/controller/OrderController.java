@@ -1,6 +1,7 @@
 package com.simple.ecommerce.controller;
 
 import com.simple.ecommerce.dto.ApiResponse;
+import com.simple.ecommerce.dto.CreateOrderRequestDto;
 import com.simple.ecommerce.dto.GetOrderResponseDto;
 import com.simple.ecommerce.schema.Order;
 import com.simple.ecommerce.service.OrderService;
@@ -28,7 +29,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Order>> createOrder(@RequestBody Order order) {
+    public ResponseEntity<ApiResponse<Order>> createOrder(@RequestBody CreateOrderRequestDto order) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(orderService.createOrder(order), "Order created successfully"));
 

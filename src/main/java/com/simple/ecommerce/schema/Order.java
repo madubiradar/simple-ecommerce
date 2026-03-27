@@ -1,10 +1,7 @@
 package com.simple.ecommerce.schema;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -15,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Entity
+@Builder
 @Table(name = "orders")
 @SQLDelete(sql = "UPDATE orders SET deleted_at= CURRENT_TIMESTAMP where id= ?")
 @SQLRestriction("deleted_at is NULL")
