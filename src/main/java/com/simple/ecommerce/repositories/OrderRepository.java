@@ -10,5 +10,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query(nativeQuery = true,
             value= "UPDATE orders SET deleted_at= CURRENT_TIMESTAMP where id= ?")
-    public Order deleteOrdersById(Long id);
+    Order deleteOrdersById(Long id);
+
 }

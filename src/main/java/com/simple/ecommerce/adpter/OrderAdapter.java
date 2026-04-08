@@ -2,16 +2,14 @@ package com.simple.ecommerce.adpter;
 
 
 import com.simple.ecommerce.dto.GetOrderResponseDto;
-import com.simple.ecommerce.dto.OrderProductsResponseDto;
+import com.simple.ecommerce.dto.OrderItemsResponseDto;
 import com.simple.ecommerce.repositories.OrderProductsRepository;
 import com.simple.ecommerce.schema.Order;
 import com.simple.ecommerce.schema.OrderProducts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +32,7 @@ public class OrderAdapter {
     public GetOrderResponseDto mapGetOrderResponseDto(Order order) {
 
         List<OrderProducts> orderProductsList = orderProductsRepository.findByOrder_Id(order.getId());
-        List<OrderProductsResponseDto> items = mapOrderProductsResponseDto(orderProductsList);
+        List<OrderItemsResponseDto> items = mapOrderProductsResponseDto(orderProductsList);
 
         return GetOrderResponseDto.builder()
                 .id(order.getId())
@@ -45,9 +43,9 @@ public class OrderAdapter {
                 .build();
     }
 
-    public List<OrderProductsResponseDto> mapOrderProductsResponseDto(List<OrderProducts> orderProductsList){
+    public List<OrderItemsResponseDto> mapOrderProductsResponseDto(List<OrderProducts> orderProductsList){
         return orderProductsList.stream()
-                .map(orderProducts -> OrderProductsResponseDto.builder()
+                .map(orderProducts -> OrderItemsResponseDto.builder()
                         .productId(orderProducts.getId())
                         .productName(orderProducts.getProduct().getTitle())
                         .productPrice(orderProducts.getProduct().getPrice())

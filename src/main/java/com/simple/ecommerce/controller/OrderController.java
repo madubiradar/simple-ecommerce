@@ -1,8 +1,6 @@
 package com.simple.ecommerce.controller;
 
-import com.simple.ecommerce.dto.ApiResponse;
-import com.simple.ecommerce.dto.CreateOrderRequestDto;
-import com.simple.ecommerce.dto.GetOrderResponseDto;
+import com.simple.ecommerce.dto.*;
 import com.simple.ecommerce.schema.Order;
 import com.simple.ecommerce.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +27,9 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<GetOrderResponseDto>> createOrder(@RequestBody CreateOrderRequestDto order) {
+    public ResponseEntity<ApiResponse<GetOrderResponseDto>> createOrder(@RequestBody CreateOrderRequestDto createOrderRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(orderService.createOrder(order), "Order created successfully"));
+                .body(ApiResponse.success(orderService.createOrder(createOrderRequestDto), "Order created successfully"));
 
     }
 
@@ -46,10 +44,16 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(null, "Order Deleted Successfully"));
     }
-//    @PutMapping
-//    public ResponseEntity<Order> updateOrder(@RequestBody Order order) {
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .body(orderService.updateOrder(order));
-//    }
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<GetOrderResponseDto>> updateOrder(@PathVariable Long id, @RequestBody UpdateOrderRequestDto updateOrderRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(orderService.updateOrder(id, updateOrderRequestDto), "Order updated successfully"));
+    }
+
+    @GetMapping("/{id}/summary")
+    public ResponseEntity<ApiResponse<GetOrderSummaryResponseDto>> getOrderSummary(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(orderService.getOrderSummary(id), "Order summary fetched successfully"));
+    }
 
 }

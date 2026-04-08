@@ -1,11 +1,8 @@
 package com.simple.ecommerce.service;
 
 import com.simple.ecommerce.adpter.OrderAdapter;
-import com.simple.ecommerce.dto.CreateOrderRequestDto;
-import com.simple.ecommerce.dto.GetOrderResponseDto;
-import com.simple.ecommerce.dto.UpdateOrderRequestDto;
+import com.simple.ecommerce.dto.*;
 import com.simple.ecommerce.exceptions.ResourceNotFoundException;
-import com.simple.ecommerce.repositories.CategoryRepository;
 import com.simple.ecommerce.repositories.OrderProductsRepository;
 import com.simple.ecommerce.repositories.OrderRepository;
 import com.simple.ecommerce.repositories.ProductRepository;
@@ -13,14 +10,13 @@ import com.simple.ecommerce.schema.Order;
 import com.simple.ecommerce.schema.OrderProducts;
 import com.simple.ecommerce.schema.OrderStatus;
 import com.simple.ecommerce.schema.Product;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -105,12 +101,37 @@ public class OrderService {
         }
 
         if(updateOrderRequestDto.getOrderItems() != null) {
-            for(var itemDto : updateOrderRequestDto.getOrderItems()) {
 
-            }
         }
 
         return orderAdapter.mapGetOrderResponseDto(order);
 
+    }
+
+    public GetOrderSummaryResponseDto  getOrderSummary(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Order Id Not Found"));
+
+        List<OrderProducts> orderProducts = orderProductsRepository.findByOrderWithProducts(order);
+
+        List<OrderItemsResponseDto> items = orderAdapter.mapOrderProductsResponseDto(orderProducts);
+
+        int totalItems = orderProducts.stream()
+                .mapToInt(OrderProducts::getQuantity).sum();
+
+        BigDecimal totalPrice = orderProducts.stream()
+                .map(orderProducts1 -> orderProducts1.getProduct().getPrice()
+                        .multiply(BigDecimal.valueOf(orderProducts1.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return GetOrderSummaryResponseDto
+                .builder()
+                .id(order.getId())
+                .orderStatus(order.getOrderStatus())
+                .orderItems(items)
+                .totalItems(totalItems)
+                .totalPrice(totalPrice)
+                .createdAt(order.getCreationAt())
+                .updatedAt(order.getUpdateAt())
+                .build();
     }
 }
