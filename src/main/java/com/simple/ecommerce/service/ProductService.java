@@ -1,5 +1,6 @@
 package com.simple.ecommerce.service;
 
+import com.simple.ecommerce.cache.ProductRedisCache;
 import com.simple.ecommerce.dto.CreateProductRequestDto;
 import com.simple.ecommerce.dto.GetProductDetailsResponseDto;
 import com.simple.ecommerce.dto.GetProductResponseDto;
@@ -18,11 +19,13 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
+    private final ProductRedisCache productRedisCache;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService, ProductRedisCache productRedisCache) {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
+        this.productRedisCache = productRedisCache;
     }
 
     public List<GetProductResponseDto> getAllProducts() {
@@ -47,7 +50,12 @@ public class ProductService {
     }
 
     public GetProductResponseDto getProductByIdSkipCategory(Long id) {
-        return productRepository.findById(id)
+
+        Optional<GetProductResponseDto> cacheSummary = productRedisCache.getSummary(id);
+        if(cacheSummary.isPresent()){
+            return cacheSummary.get();
+        }
+         var response = productRepository.findById(id)
                 .map(product -> GetProductResponseDto.builder()
                         .id(product.getId())
                         .title(product.getTitle())
@@ -56,6 +64,8 @@ public class ProductService {
                         .price(product.getPrice())
                         .rating(product.getRating())
                 .build()).orElseThrow(() -> new ResourceNotFoundException("product not found"));
+        productRedisCache.putSummary(id, response);
+        return response;
     }
 
     public GetProductDetailsResponseDto getProductByIdWithCategory(Long id) {

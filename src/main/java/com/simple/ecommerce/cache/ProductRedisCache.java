@@ -1,14 +1,14 @@
 package com.simple.ecommerce.cache;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.simple.ecommerce.dto.GetProductResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
+import java.time.Duration;
 import java.util.Optional;
 
 @Service
@@ -16,17 +16,19 @@ import java.util.Optional;
 @Slf4j
 public class ProductRedisCache {
 
+    private final Duration cache_ttl = Duration.ofMinutes(1);
+
     String KEY_SUMMARY = "product:summary:";
     private final StringRedisTemplate stringRedisTemplate;
     private final ObjectMapper objectMapper;
 
-    Optional<GetProductResponseDto> getSummary(Long id){
+    public Optional<GetProductResponseDto> getSummary(Long id){
         String responseJson = stringRedisTemplate.opsForValue().get(KEY_SUMMARY + id);
         if(responseJson == null){
             return Optional.empty(); // its cache miss, data not present in cache
         }
         try {
-            GetProductResponseDto getProductResponseDto = objectMapper.convertValue(responseJson, GetProductResponseDto.class);
+            GetProductResponseDto getProductResponseDto = objectMapper.readValue(responseJson, GetProductResponseDto.class);
             return Optional.of(getProductResponseDto);
         } catch (Exception e) {
             log.error("Error parsing product summary {}",e.getMessage());
@@ -35,9 +37,10 @@ public class ProductRedisCache {
         }
     }
 
-    private void putSummary(Long id, GetProductResponseDto getProductResponseDto){
+    public void putSummary(Long id, GetProductResponseDto getProductResponseDto){
         try{
-            stringRedisTemplate.opsForValue().set(KEY_SUMMARY + id,objectMapper.writeValueAsString(getProductResponseDto) );
+            stringRedisTemplate.opsForValue().set(
+                    KEY_SUMMARY + id,objectMapper.writeValueAsString(getProductResponseDto), cache_ttl );
         } catch (Exception e) {
            throw  new RuntimeException("Error parsing product summary" + e.getMessage());
         }
