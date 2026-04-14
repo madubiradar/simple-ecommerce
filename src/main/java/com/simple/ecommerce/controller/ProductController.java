@@ -6,15 +6,20 @@ import com.simple.ecommerce.dto.GetProductDetailsResponseDto;
 import com.simple.ecommerce.dto.GetProductResponseDto;
 import com.simple.ecommerce.schema.Product;
 import com.simple.ecommerce.service.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/products")
+@Slf4j
 public class ProductController {
 
     private final ProductService productService;
@@ -39,7 +44,9 @@ public class ProductController {
 
     @GetMapping("/{Id}/optimized")
     public ResponseEntity<ApiResponse<GetProductResponseDto>> getProductByIdSkipCategory(@PathVariable Long Id) {
+        Instant instant = Instant.now();
         GetProductResponseDto getProductResponseDto = productService.getProductByIdSkipCategory(Id);
+        log.info("total round trip time {}", Duration.between(instant, Instant.now()).toMillis());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(getProductResponseDto,"Product Fetched successfully"));
     }

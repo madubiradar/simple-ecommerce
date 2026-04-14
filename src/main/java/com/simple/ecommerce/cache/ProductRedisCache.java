@@ -25,9 +25,11 @@ public class ProductRedisCache {
     public Optional<GetProductResponseDto> getSummary(Long id){
         String responseJson = stringRedisTemplate.opsForValue().get(KEY_SUMMARY + id);
         if(responseJson == null){
+            log.warn("cache miss, no data found in cache.");
             return Optional.empty(); // its cache miss, data not present in cache
         }
         try {
+            log.info("This is cache hit");
             GetProductResponseDto getProductResponseDto = objectMapper.readValue(responseJson, GetProductResponseDto.class);
             return Optional.of(getProductResponseDto);
         } catch (Exception e) {
@@ -39,8 +41,7 @@ public class ProductRedisCache {
 
     public void putSummary(Long id, GetProductResponseDto getProductResponseDto){
         try{
-            stringRedisTemplate.opsForValue().set(
-                    KEY_SUMMARY + id,objectMapper.writeValueAsString(getProductResponseDto), cache_ttl );
+            stringRedisTemplate.opsForValue().set(KEY_SUMMARY + id,objectMapper.writeValueAsString(getProductResponseDto), cache_ttl );
         } catch (Exception e) {
            throw  new RuntimeException("Error parsing product summary" + e.getMessage());
         }
