@@ -29,7 +29,7 @@ public class ProductRedisCache {
             return Optional.empty(); // its cache miss, data not present in cache
         }
         try {
-            log.info("This is cache hit");
+            log.info("This is cache hit for key {}", KEY_SUMMARY + id);
             GetProductResponseDto getProductResponseDto = objectMapper.readValue(responseJson, GetProductResponseDto.class);
             return Optional.of(getProductResponseDto);
         } catch (Exception e) {
@@ -42,6 +42,7 @@ public class ProductRedisCache {
     public void putSummary(Long id, GetProductResponseDto getProductResponseDto){
         try{
             stringRedisTemplate.opsForValue().set(KEY_SUMMARY + id,objectMapper.writeValueAsString(getProductResponseDto), cache_ttl );
+            log.info("Key is {}",  KEY_SUMMARY + id);
         } catch (Exception e) {
            throw  new RuntimeException("Error parsing product summary" + e.getMessage());
         }
